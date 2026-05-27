@@ -45,6 +45,28 @@ def get_all_repas():
            
             repas.append(repa)
     return repas
+
+def get_repas_by_date(date):
+    with sqlite3.connect(DB_NAME) as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM repas WHERE date(date) = :date ORDER BY ID DESC", {'date': date})
+        pulled_repas= cursor.fetchall()
+        repas = []
+        for pulled_repa in pulled_repas:
+            repa = get_repas_by_id(pulled_repa[0])
+            cursor.execute("SELECT * FROM item_repas WHERE repasID = :repasID", {'repasID': repa.ID })
+            pulled_items = cursor.fetchall()
+            
+            items = []
+
+            for pulled_item in pulled_items:
+                item = get_item_repas_by_id(pulled_item[0])
+                items.append(item)
+
+            repa.items = items
+           
+            repas.append(repa)
+    return repas
         
 
 
@@ -152,15 +174,18 @@ def create_aliment_card(parent, aliment, row, column, on_select):
 
 def create_repas_card(parent, repas, row, column, on_select):
     repas_frame = ctk.CTkFrame(parent, corner_radius=20, fg_color="#FFFFFF")
-    repas_frame.grid(row=row, column=column, padx=5, pady=10, sticky="ew")
+    repas_frame.grid(row=row, column=column, pady=10, sticky="ew")
     repas_frame.grid_columnconfigure(0, weight=1)
     repas_frame.grid_columnconfigure(1, weight=1)
+    repas_frame.bind("<Button-1>", lambda event: on_select(repas))
 
     left_frame = ctk.CTkFrame(repas_frame, fg_color="transparent")
     left_frame.grid(row=0, column=0, padx=20, pady=20, sticky="nw")
+    left_frame.bind("<Button-1>", lambda event: on_select(repas))
 
     right_frame = ctk.CTkFrame(repas_frame, fg_color="transparent")
     right_frame.grid(row=0, column=1, padx=20, pady=20, sticky="nw")
+    right_frame.bind("<Button-1>", lambda event: on_select(repas))
 
     type_label = ctk.CTkLabel(
         left_frame,
@@ -169,6 +194,7 @@ def create_repas_card(parent, repas, row, column, on_select):
         text_color="black"
     )
     type_label.grid(row=0, column=0, sticky="w")
+    type_label.bind("<Button-1>", lambda event: on_select(repas))
 
     date_label = ctk.CTkLabel(
         left_frame,
@@ -177,6 +203,7 @@ def create_repas_card(parent, repas, row, column, on_select):
         text_color="gray"
     )
     date_label.grid(row=1, column=0, sticky="w", pady=(10, 10))
+    date_label.bind("<Button-1>", lambda event: on_select(repas))
 
     total_label = ctk.CTkLabel(
         left_frame,
@@ -185,6 +212,7 @@ def create_repas_card(parent, repas, row, column, on_select):
         text_color="black"
     )
     total_label.grid(row=2, column=0, sticky="w")
+    total_label.bind("<Button-1>", lambda event: on_select(repas))
 
     for index, item in enumerate(repas.items):
         item_label = ctk.CTkLabel(
@@ -194,3 +222,51 @@ def create_repas_card(parent, repas, row, column, on_select):
             text_color="black"
         )
         item_label.grid(row=index, column=0, sticky="w", pady=2)
+        item_label.bind("<Button-1>", lambda event: on_select(repas))
+
+def create_repas_item_card(parent, repas_item, row, column):
+    repas_item_frame = ctk.CTkFrame(parent, corner_radius=20, fg_color="#FFFFFF")
+    repas_item_frame.grid(row=row, column=column, pady=10, sticky="ew")
+    repas_item_frame.grid_columnconfigure(0, weight=0)
+    repas_item_frame.grid_columnconfigure(1, weight=1)
+    
+    left_frame = ctk.CTkFrame(repas_item_frame, fg_color="transparent")
+    left_frame.grid(row=0, column=0, padx=5, pady=20, sticky="nw")
+
+    right_frame = ctk.CTkFrame(repas_item_frame, fg_color="transparent")
+    right_frame.grid(row=0, column=1, padx=5, pady=20, sticky="nw")
+
+    image = ctk.CTkImage(
+        light_image=Image.open(repas_item.aliment.image),
+        dark_image=Image.open(repas_item.aliment.image),
+        size=(80, 80)
+    )
+    
+    image_label = ctk.CTkLabel(left_frame, image=image, text="")
+    image_label.image = image
+    image_label.grid(row=0, column=0, padx=15, pady=15)
+
+    aliment_label = ctk.CTkLabel(
+        right_frame,
+        text=repas_item.aliment.nom,
+        font=("Arial", 14, "bold"),
+        text_color="black"
+    )
+    aliment_label.grid(row=0, column=0, padx=5, sticky="w", pady=(10, 10))
+    
+    poids_label = ctk.CTkLabel(
+        right_frame,
+        text=f"Poids: {repas_item.poids:.1f} g",
+        font=("Arial", 14),
+        text_color="black"
+    )
+    poids_label.grid(row=1, column=0, padx=5, sticky="w")
+
+    calories_label = ctk.CTkLabel(
+        right_frame,
+        text=f"Calories: {repas_item.calories():.1f} cal",
+        font=("Arial", 14),
+        text_color="black"
+    )
+    calories_label.grid(row=2, column=0, sticky="w")
+        
