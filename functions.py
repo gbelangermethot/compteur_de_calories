@@ -27,7 +27,7 @@ def get_all_aliments():
 def get_all_repas():
     with sqlite3.connect(DB_NAME) as connection:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM repas")
+        cursor.execute("SELECT * FROM repas ORDER BY ID DESC")
         pulled_repas= cursor.fetchall()
         repas = []
         for pulled_repa in pulled_repas:
