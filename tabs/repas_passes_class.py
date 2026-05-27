@@ -17,11 +17,14 @@ class repas_passes_class:
 
         self.frame.grid_rowconfigure(0, weight=1)
         self.frame.grid_columnconfigure(0, weight=1)
-        self.frame.grid_columnconfigure(1, weight=3)
+        self.frame.grid_columnconfigure(1, weight=2)
 
         self.frame.grid(row=0, column=0, sticky="nsew")
         self.left_panel = ctk.CTkFrame(self.frame, fg_color="transparent")
-        self.left_panel.grid(row=0, column=0, padx=(60,10), pady=20, sticky="nsew")
+        self.left_panel.grid(row=0, column=0, padx=(20,10), pady=20, sticky="nsew")
+
+        self.left_panel.grid_rowconfigure(2, weight=1)
+        self.left_panel.grid_columnconfigure(0, weight=1)
 
         self.left_header = ctk.CTkLabel(
             self.left_panel,
@@ -42,8 +45,8 @@ class repas_passes_class:
         self.date_picker.grid(row=1, column=0, pady=10)
         self.date_picker.bind("<<DateEntrySelected>>", self.filter_repas_by_date)
 
-        self.selected_repas_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
-        self.selected_repas_frame.grid(row=2, column=0, pady=20, padx=60)
+        self.selected_repas_frame = ctk.CTkScrollableFrame(self.left_panel, fg_color="transparent")
+        self.selected_repas_frame.grid(row=2, column=0, pady=20, padx=60, sticky="nsew")
 
         self.selected_repas = ctk.CTkLabel(
             self.selected_repas_frame,
