@@ -142,6 +142,17 @@ def create_item_repas(aliment, poids, repas=None, type_repas=None):
 
     return Item_repas(item_id, repas, aliment, poids)
 
+def create_aliment(nom, calories_par_gram, image):
+    with sqlite3.connect(DB_NAME) as connection:
+        cursor = connection.cursor()
+        cursor.execute("""INSERT INTO aliments (nom, image, calories_par_gram)
+                       VALUES(:nom, :image, :calories_par_gram)""", 
+                       {'nom' : nom,
+                        'image': image,
+                        'calories_par_gram': calories_par_gram})
+        return {'nom' : nom,
+                'image': image,
+                'calories_par_gram': calories_par_gram}
 
 def create_aliment_card(parent, aliment, row, column, on_select):
     aliment_frame = ctk.CTkFrame(parent, corner_radius=20, fg_color="#FFFFFF")

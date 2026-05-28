@@ -5,6 +5,7 @@ from PIL import Image
 from functions import *
 from tabs.creation_repas_tab import build_creation_repas_tab
 from tabs.repas_passes_class import *
+from tabs.creation_aliment_tab import *
 
 
 app = ctk.CTk()
@@ -22,6 +23,7 @@ repas_passes_tab = tab_view.add("Repas passe")
 repas_passes_page = repas_passes_class(repas_passes_tab)
 
 creation_aliment_tab = tab_view.add("Ajouter un aliment")
+build_creation_aliment_tab(creation_aliment_tab)
 
 def refresh():
     repas_passes_page.refresh_repas_liste()
