@@ -24,6 +24,23 @@ def get_all_aliments():
             aliments.append(aliment)
     return aliments
 
+def get_aliments_by_nom(nom):
+    with sqlite3.connect(DB_NAME) as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM aliments WHERE nom like :nom ORDER BY nom",{'nom' : f"%{nom}%"})
+        pulled_aliments= cursor.fetchall()
+        aliments = []
+        for pulled_aliment in pulled_aliments:
+            aliment = Aliment(
+                pulled_aliment[0],
+                pulled_aliment[1],
+                pulled_aliment[2],
+                pulled_aliment[3]
+            )
+            aliments.append(aliment)
+    return aliments
+
+
 def get_all_repas():
     with sqlite3.connect(DB_NAME) as connection:
         cursor = connection.cursor()
