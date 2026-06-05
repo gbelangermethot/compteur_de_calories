@@ -11,6 +11,7 @@ class repas_passes_class:
         parent.grid_columnconfigure(0, weight=1)
 
         self.liste_repas = get_all_repas()
+        self.last_selected_date = ""
         
 
         self.frame = ctk.CTkFrame(parent, fg_color="transparent")
@@ -43,7 +44,8 @@ class repas_passes_class:
             date_pattern='yyyy-mm-dd'
         )
         self.date_picker.grid(row=1, column=0, pady=10)
-        self.date_picker.bind("<<DateEntrySelected>>", self.filter_repas_by_date)
+        self.date_picker.bind("<<DateEntrySelected>>", self.on_date_selected)
+        
 
         self.selected_repas_frame = ctk.CTkScrollableFrame(self.left_panel, fg_color="transparent")
         self.selected_repas_frame.grid(row=2, column=0, pady=20, padx=60, sticky="nsew")
@@ -120,6 +122,18 @@ class repas_passes_class:
             selected_date = self.date_picker.get()
             self.liste_repas = get_repas_by_date(selected_date)
             self.create_liste_repas()
+
+    def on_date_selected(self, event=None):
+        selected_date = self.date_picker.get()
+        print("selected date:" +selected_date)
+        print("last selected date:" + self.last_selected_date)
+        if selected_date == self.last_selected_date:
+            print("same date, no filter")
+            return
+
+        print("date changed, filtering")
+        self.last_selected_date = selected_date
+        self.filter_repas_by_date()
             
 
 
