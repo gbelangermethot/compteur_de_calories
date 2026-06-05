@@ -2,6 +2,25 @@ import customtkinter as ctk
 from functions import *
 from tkcalendar import DateEntry
 
+
+class FixedDateEntry(DateEntry):
+    def _on_focus_out_cal(self, event):
+        """Keep the popup open while the user clicks the calendar arrows."""
+        try:
+            x, y = self._top_cal.winfo_pointerxy()
+            root_x = self._top_cal.winfo_rootx()
+            root_y = self._top_cal.winfo_rooty()
+            width = self._top_cal.winfo_width()
+            height = self._top_cal.winfo_height()
+
+            if root_x <= x <= root_x + width and root_y <= y <= root_y + height:
+                return
+        except Exception:
+            pass
+
+        super()._on_focus_out_cal(event)
+
+
 class repas_passes_class:
     
     def __init__(self, parent):
@@ -11,7 +30,8 @@ class repas_passes_class:
         parent.grid_columnconfigure(0, weight=1)
 
         self.liste_repas = get_all_repas()
-        self.last_selected_date = ""
+        
+        self.selected_date = ""
         
 
         self.frame = ctk.CTkFrame(parent, fg_color="transparent")
@@ -24,7 +44,7 @@ class repas_passes_class:
         self.left_panel = ctk.CTkFrame(self.frame, fg_color="transparent")
         self.left_panel.grid(row=0, column=0, padx=(20,10), pady=20, sticky="nsew")
 
-        self.left_panel.grid_rowconfigure(2, weight=1)
+        self.left_panel.grid_rowconfigure(3, weight=1)
         self.left_panel.grid_columnconfigure(0, weight=1)
 
         self.left_header = ctk.CTkLabel(
@@ -35,7 +55,7 @@ class repas_passes_class:
         )
         self.left_header.grid(row=0, column=0, pady=20, padx=60)
 
-        self.date_picker = DateEntry(
+        self.date_picker = FixedDateEntry(
             self.left_panel,
             width=16,
             background='darkblue',
@@ -44,11 +64,16 @@ class repas_passes_class:
             date_pattern='yyyy-mm-dd'
         )
         self.date_picker.grid(row=1, column=0, pady=10)
-        self.date_picker.bind("<<DateEntrySelected>>", self.on_date_selected)
-        
+
+        self.button_search = ctk.CTkButton(
+            self.left_panel,
+            text="Rechercher",
+            command=self.filter_repas_by_date
+        )
+        self.button_search.grid(row=2, column=0, pady=10)
 
         self.selected_repas_frame = ctk.CTkScrollableFrame(self.left_panel, fg_color="transparent")
-        self.selected_repas_frame.grid(row=2, column=0, pady=20, padx=60, sticky="nsew")
+        self.selected_repas_frame.grid(row=3, column=0, pady=20, padx=60, sticky="nsew")
 
         self.selected_repas = ctk.CTkLabel(
             self.selected_repas_frame,
@@ -123,17 +148,8 @@ class repas_passes_class:
             self.liste_repas = get_repas_by_date(selected_date)
             self.create_liste_repas()
 
-    def on_date_selected(self, event=None):
-        selected_date = self.date_picker.get()
-        print("selected date:" +selected_date)
-        print("last selected date:" + self.last_selected_date)
-        if selected_date == self.last_selected_date:
-            print("same date, no filter")
-            return
-
-        print("date changed, filtering")
-        self.last_selected_date = selected_date
-        self.filter_repas_by_date()
+    
+        
             
 
 
