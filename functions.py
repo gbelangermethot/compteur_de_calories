@@ -188,14 +188,19 @@ def create_aliment_card(parent, aliment, row, column, on_select):
     image_label.grid(row=0, column=0, rowspan=2, padx=15, pady=15)
     image_label.bind("<Button-1>", lambda event: on_select(aliment))
 
-    name_label = ctk.CTkLabel(aliment_frame, text=aliment.nom, font=("Arial", 18, "bold"))
+    name_label = ctk.CTkLabel(
+        aliment_frame, 
+        text=aliment.nom, 
+        font=("Arial", 18, "bold"),
+        text_color="black")
     name_label.grid(row=0, column=1, sticky="w", padx=20, pady=(20, 5))
     name_label.bind("<Button-1>", lambda event: on_select(aliment))
 
     calories_label = ctk.CTkLabel(
         aliment_frame,
         text=f"{aliment.calories_par_gram} calories / gram",
-        font=("Arial", 14)
+        font=("Arial", 14),
+        text_color="black"
     )
     calories_label.grid(row=1, column=1, sticky="w", padx=10, pady=(0, 20))
     calories_label.bind("<Button-1>", lambda event: on_select(aliment))
